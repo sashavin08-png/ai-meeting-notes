@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% import "_waveform.html" as wf %}
 {% block title %}Log in — AI Meeting Notes{% endblock %}
 {% block content %}
-  <div class="eyebrow"><span>AI Meeting Notes</span></div>
+  <div class="eyebrow"><span class="eyebrow-brand">{{ wf.waveform("small") }} AI Meeting Notes</span></div>
   <h1>Log in</h1>
 
   <div class="auth-card">
@@ -12,11 +13,11 @@
       <label for="password">Password</label>
       <input type="password" id="password" name="password" required>
 
-      <button type="submit" class="btn" style="width: 100%;">Log in</button>
+      <button type="submit" class="btn" style="width: 100%; justify-content: center;">Log in</button>
     </form>
   </div>
 
-  <div class="card-meta" style="margin-top: 16px;">
-    No account yet? <a href="{{ url_for('register') }}" style="color: var(--accent); margin-left: 4px;">Sign up</a>
+  <div class="card-meta" style="margin-top: 18px;">
+    No account yet? <a href="{{ url_for('register') }}" class="link-accent" style="margin-left: 6px;">Sign up</a>
   </div>
 {% endblock %}

@@ -1,36 +1,56 @@
 {% extends "base.html" %}
+{% import "_waveform.html" as wf %}
 {% block title %}Your meetings — AI Meeting Notes{% endblock %}
 {% block content %}
   <div class="eyebrow">
-    <span>{{ user['email'] }} &middot; {{ user['plan'] }} plan</span>
+    <span class="eyebrow-brand">{{ wf.waveform("small") }} AI Meeting Notes</span>
     <a href="{{ url_for('logout') }}">Log out</a>
   </div>
   <h1>Your meetings</h1>
 
-  {% if user['plan'] == 'free' %}
-    <div class="quota">{{ used_this_month }} / {{ monthly_limit }} meetings used this month (free plan)</div>
-  {% endif %}
+  <div class="balance">
+    <div>
+      {% if user['plan'] == 'free' %}
+        <div class="balance-label">Recordings left this month</div>
+        <div class="balance-figure">{{ monthly_limit - used_this_month }}<span class="of">of {{ monthly_limit }}</span></div>
+        <div class="balance-meter"><div class="balance-meter-fill" style="width: {{ ((monthly_limit - used_this_month) / monthly_limit * 100) | round | int }}%;"></div></div>
+      {% else %}
+        <div class="balance-label">Your plan</div>
+        <div class="balance-figure" style="font-size: 28px;">Unlimited</div>
+      {% endif %}
+    </div>
+    <div class="balance-plan">
+      <strong>{{ user['email'] }}</strong>
+      {{ user['plan'] }} plan
+    </div>
+  </div>
 
   <div class="btn-row">
     <a href="{{ url_for('upload') }}" class="btn">+ Upload a recording</a>
     {% if user['plan'] == 'free' %}
-      <a href="{{ url_for('upgrade') }}" style="color: var(--accent); font-family: var(--mono); font-size: 12px;">Upgrade to unlimited &rarr;</a>
+      <a href="{{ url_for('upgrade') }}" class="link-accent">Upgrade to unlimited &rarr;</a>
     {% else %}
-      <a href="{{ url_for('billing_portal') }}" style="color: var(--accent); font-family: var(--mono); font-size: 12px;">Manage billing &rarr;</a>
+      <a href="{{ url_for('billing_portal') }}" class="link-accent">Manage billing &rarr;</a>
     {% endif %}
   </div>
 
   {% if meetings %}
     {% for m in meetings %}
-      <a class="card" href="{{ url_for('meeting_detail', meeting_id=m['id']) }}">
-        <div class="card-title">{{ m['title'] }}</div>
-        <div class="card-meta">
-          <span class="badge {{ m['status'] }}">{{ m['status'] }}</span>
-          <span>{{ m['created_at'][:16] }}</span>
+      <a class="card status-{{ m['status'] }}" href="{{ url_for('meeting_detail', meeting_id=m['id']) }}">
+        <div class="card-body">
+          <div class="card-title">{{ m['title'] }}</div>
+          <div class="card-meta">
+            <span class="badge {{ m['status'] }}">{{ m['status'] }}</span>
+            <span>{{ m['created_at'][:16] }}</span>
+          </div>
         </div>
+        {{ wf.waveform("dim small") }}
       </a>
     {% endfor %}
   {% else %}
-    <div class="empty-state">No meetings yet — upload your first recording.</div>
+    <div class="empty-state">
+      {{ wf.waveform("dim") }}
+      <span>No meetings yet — upload your first recording.</span>
+    </div>
   {% endif %}
 {% endblock %}

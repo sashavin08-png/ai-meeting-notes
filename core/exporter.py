@@ -2,13 +2,22 @@
 PDF export for a meeting's notes — summary, action items, and full transcript.
 """
 
+from pathlib import Path
+
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 
+# Bundled directly in the project (rather than relying on the OS having a
+# Unicode font installed at some guessed system path — that worked in one
+# Linux test environment but silently failed on Windows, where no font was
+# found at those paths, and fpdf2 fell back to a Latin-only font that can't
+# render Cyrillic at all). This file ships from matplotlib's redistributable
+# DejaVu Sans font (Bitstream Vera / DejaVu license — free to embed) and
+# works identically on any OS since it's just a path relative to this file.
+_FONT_PATH = Path(__file__).parent / "fonts" / "DejaVuSans.ttf"
+
 
 def _sanitize(text: str) -> str:
-    """fpdf2's default font (Helvetica) only supports Latin-1 characters.
-    Non-Latin text (e.g. Cyrillic) needs a Unicode font — see generate_pdf()."""
     return text or ""
 
 
@@ -16,25 +25,8 @@ def generate_pdf(meeting: dict) -> bytes:
     pdf = FPDF()
     pdf.add_page()
 
-    # Try to use a Unicode-capable font if one is available, so transcripts
-    # in Russian/Ukrainian/etc. render correctly instead of raising an error
-    # or dropping characters. Falls back to the built-in Latin-only font
-    # for environments where no Unicode TTF is installed.
-    unicode_font_loaded = False
-    for font_path in (
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-    ):
-        try:
-            pdf.add_font("Body", "", font_path)
-            pdf.set_font("Body", size=11)
-            unicode_font_loaded = True
-            break
-        except (RuntimeError, FileNotFoundError):
-            continue
-
-    if not unicode_font_loaded:
-        pdf.set_font("Helvetica", size=11)
+    pdf.add_font("Body", "", str(_FONT_PATH))
+    pdf.set_font("Body", size=11)
 
     def heading(text):
         pdf.set_font_size(16)
