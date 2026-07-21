@@ -135,8 +135,13 @@ def upload():
 
         meeting_id = db.create_meeting(user_id=user["id"], title=title)
 
-        safe_name = secure_filename(file.filename)
-        saved_path = UPLOAD_DIR / f"{meeting_id}_{safe_name}"
+        # Take the extension straight from the original filename rather than
+        # secure_filename()'s output: for a non-ASCII basename (e.g. Cyrillic),
+        # secure_filename() can strip it down to just the extension with no
+        # leading dot, producing an extensionless saved file that Groq's API
+        # can't identify the audio format of.
+        ext = file.filename.rsplit(".", 1)[1].lower()
+        saved_path = UPLOAD_DIR / f"{meeting_id}.{ext}"
         file.save(saved_path)
 
         try:
