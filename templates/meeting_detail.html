@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ meeting['title'] }} — AI Meeting Notes{% endblock %}
+{% block content %}
+  <div class="eyebrow"><a href="{{ url_for('meetings_list') }}">&larr; Your meetings</a></div>
+  <h1>{{ meeting['title'] }}</h1>
+  <div class="card-meta" style="margin-bottom: 20px;">
+    <span class="badge {{ meeting['status'] }}">{{ meeting['status'] }}</span>
+    <span>{{ meeting['created_at'][:16] }}</span>
+  </div>
+
+  {% if meeting['status'] == 'processing' %}
+    <div class="empty-state">Still processing — refresh in a moment.</div>
+  {% elif meeting['status'] == 'failed' %}
+    <div class="flash">Processing failed: {{ meeting['summary'] }}</div>
+  {% else %}
+    <div class="btn-row">
+      <a href="{{ url_for('meeting_pdf', meeting_id=meeting['id']) }}" class="btn">Download PDF</a>
+      <a href="mailto:?subject={{ meeting['title'] | urlencode }}&body={{ (meeting['summary'] + '\n\nAction items:\n' + (meeting['action_items'] or 'None')) | urlencode }}"
+         style="color: var(--accent); font-family: var(--mono); font-size: 12px;">Share via email</a>
+    </div>
+
+    <div class="section-label">Summary</div>
+    <div class="content-box">{{ meeting['summary'] }}</div>
+
+    <div class="section-label">Action items</div>
+    <div class="content-box">{{ meeting['action_items'] if meeting['action_items'] else 'None identified.' }}</div>
+
+    <div class="section-label">Full transcript</div>
+    <div class="content-box">{{ meeting['transcript'] }}</div>
+  {% endif %}
+{% endblock %}

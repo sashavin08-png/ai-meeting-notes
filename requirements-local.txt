@@ -1,0 +1,15 @@
+# Optional, local-development-only dependencies.
+#
+# These are NOT installed on the deployed (Render) version of the app —
+# the main requirements.txt is deliberately lightweight so the deployed
+# service doesn't need to run heavy ML models on limited free-tier RAM.
+#
+# Install these only if you want to:
+#   - run transcription locally without a Groq account (openai-whisper)
+#   - use speaker diarization (pyannote.audio), which currently has no
+#     lightweight hosted-API equivalent wired into this app
+#
+# pip install -r requirements-local.txt
+
+openai-whisper
+pyannote.audio

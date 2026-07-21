@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Log in — AI Meeting Notes{% endblock %}
+{% block content %}
+  <div class="eyebrow"><span>AI Meeting Notes</span></div>
+  <h1>Log in</h1>
+
+  <div class="auth-card">
+    <form method="POST">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit" class="btn" style="width: 100%;">Log in</button>
+    </form>
+  </div>
+
+  <div class="card-meta" style="margin-top: 16px;">
+    No account yet? <a href="{{ url_for('register') }}" style="color: var(--accent); margin-left: 4px;">Sign up</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Your meetings — AI Meeting Notes{% endblock %}
+{% block content %}
+  <div class="eyebrow">
+    <span>{{ user['email'] }} &middot; {{ user['plan'] }} plan</span>
+    <a href="{{ url_for('logout') }}">Log out</a>
+  </div>
+  <h1>Your meetings</h1>
+
+  {% if user['plan'] == 'free' %}
+    <div class="quota">{{ used_this_month }} / {{ monthly_limit }} meetings used this month (free plan)</div>
+  {% endif %}
+
+  <div class="btn-row">
+    <a href="{{ url_for('upload') }}" class="btn">+ Upload a recording</a>
+    {% if user['plan'] == 'free' %}
+      <a href="{{ url_for('upgrade') }}" style="color: var(--accent); font-family: var(--mono); font-size: 12px;">Upgrade to unlimited &rarr;</a>
+    {% else %}
+      <a href="{{ url_for('billing_portal') }}" style="color: var(--accent); font-family: var(--mono); font-size: 12px;">Manage billing &rarr;</a>
+    {% endif %}
+  </div>
+
+  {% if meetings %}
+    {% for m in meetings %}
+      <a class="card" href="{{ url_for('meeting_detail', meeting_id=m['id']) }}">
+        <div class="card-title">{{ m['title'] }}</div>
+        <div class="card-meta">
+          <span class="badge {{ m['status'] }}">{{ m['status'] }}</span>
+          <span>{{ m['created_at'][:16] }}</span>
+        </div>
+      </a>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">No meetings yet — upload your first recording.</div>
+  {% endif %}
+{% endblock %}
